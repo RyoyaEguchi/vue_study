@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sample3</title>
+  <script src="https://unpkg.com/vue@2.5.17"></script>
+</head>
+<body>
+  <main id="main">
+    <fruits-list-title></fruits-list-title>
+    <input-date-with-today></input-date-with-today>
+  </main>
+
+  <div id="app">
+    <item-desc :item-name='myItem'></item-desc>
+  </div>
+
+  <div id="fruits-component">
+    <ol>
+      <fruits-item-name v-for="fruit in fruitsItems" :key="fruit.name" :fruits-item="fruit"></fruits-item-name>
+    </ol>
+  </div>
+
+  <div id="fruits-counter">
+    <div v-for="fruit in fruits">
+      {{fruit.name}}: <counter-button @increment="incrementCartStatus()"></counter-button>
+    </div>
+    <p>合計： {{total}}</p>
+  </div>
+</body>
+</html>
+
+<script type="text/x-template" id="fruits-list-title">
+  <h1>フルーツ一覧</h1>
+</script>
+
+<script>
+  // Vue.component('fruits-list-title', {
+  //   template: '<h1>フルーツ一覧</h1>'
+  // });
+
+  // Vue.component('fruits-list', {
+  //   template: '<div><fruits-list-title></fruits-list-title></div>'
+  // });
+  let counterButton = Vue.extend({
+    template: '<span>{{counter}}個<button @click="addToCart">追加</button></span>',
+    data: function () {
+      return {
+        counter: 0
+      }
+    },
+    methods: {
+      addToCart: function () {
+        this.counter += 1;
+        this.$emit('increment');
+      }
+    }
+  });
+  new Vue({
+    el: '#fruits-counter',
+    components: {
+      'counter-button': counterButton
+    },
+    data: {
+      total: 0,
+      fruits: [
+        {name: '梨'},
+        {name: 'イチゴ'}
+      ]
+    },
+    methods: {
+      incrementCartStatus: function () {
+        this.total += 1;
+      }
+    }
+  })
+
+  Vue.component('fruits-item-name', {
+    props: {
+      fruitsItem: {
+        type: Object,
+        required: true
+      }
+    },
+    template: '<li>{{ fruitsItem.name }}</li>'
+  });
+  new Vue({
+    el: '#fruits-component',
+    data: {
+      fruitsItems: [
+        {name: '梨'},
+        {name: 'イチゴ'}
+      ]
+    }
+  });
+
+  Vue.component('item-desc', {
+    props: {
+      itemName: {
+        type: String
+      }
+    },
+    template: '<p>{{ itemName }}は便利です。</p>'
+  })
+
+  
+  new Vue({
+    el: '#app',
+    data: { myItem: 'pen' }
+  })
+
+  Vue.component('fruits-list-title', {
+    template: '#fruits-list-title'
+  });
+  Vue.component('input-date-with-today', {
+    render: function (createElement) {
+      return createElement(
+        'input',
+        {
+          attrs: {
+            type: 'date',
+            value: new Date().toISOString().substring(0, 10)
+          }
+        }
+      )
+    }
+  })
+  new Vue({
+    el: '#main',
+    // components: {
+    //   'fruits-list-title': {
+    //     template: '<h1>フルーツ一覧</h1>'
+    //   }
+    // }
+  });
+  </script>
